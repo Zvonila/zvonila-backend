@@ -12,6 +12,16 @@ services:
     networks:
       - app-network
 
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8001:8080"
+    networks:
+      - app-network
+    restart: always
+
 networks:
   app-network:
     driver: bridge

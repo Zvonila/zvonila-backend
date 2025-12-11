@@ -24,6 +24,7 @@ def upgrade() -> None:
     op.create_table(
         "chats",
         sa.Column("id", sa.Integer, primary_key=True, index=True),
+        sa.Column("username", sa.Text, nullable=False),
         sa.Column("initiator_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
         sa.Column("receiver_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),

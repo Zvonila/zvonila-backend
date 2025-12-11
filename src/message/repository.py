@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.message.models import Message
-from sqlalchemy import insert, select, delete
+from sqlalchemy import insert, select, delete, desc
 from collections.abc import Sequence
 from typing import Optional
 
@@ -39,6 +39,7 @@ class MessageRepository:
         result = await self.db_session.execute(
             select(Message)
             .where(Message.chat_id == chat_id)
+            .order_by(desc(Message.id))
             .limit(limit)
             .offset(offset)
         )

@@ -22,6 +22,7 @@ class ChatRepository:
         stmt = (
             insert(Chat)
             .values(
+                username="",
                 initiator_id=initiator_id,
                 receiver_id=receiver_id
             )
@@ -49,3 +50,13 @@ class ChatRepository:
             delete(Chat).where(Chat.id == chat_id)
         )
         await self.db_session.commit()
+
+    async def find_chat_by_two_user(self, initiator_id: int, receiver_id: int) -> Optional[Chat]:
+        """Поиск чата между двумя пользователями"""
+        result = await self.db_session.execute(
+            select(Chat).where(
+                ((Chat.initiator_id == initiator_id) & (Chat.receiver_id == receiver_id)) |
+                ((Chat.initiator_id == receiver_id) & (Chat.receiver_id == initiator_id))
+            )
+        )
+        return result.scalar_one_or_none()

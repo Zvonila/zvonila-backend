@@ -1,4 +1,6 @@
 from src.websocket.manager import WebSocketManager
 
-def get_websoket_manager() -> WebSocketManager:
-    return WebSocketManager()
+ws_manager = WebSocketManager()
+
+def get_websocket_manager() -> WebSocketManager:
+    return ws_manager

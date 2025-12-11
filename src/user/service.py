@@ -23,7 +23,7 @@ class UserService:
         if not user:
             raise UserNotFoundError()
         
-        hash_password = cast(str, user.password)
+        hash_password = user.password
         if not self.password_service.verify(
             hash_password=hash_password, 
             raw_password=password

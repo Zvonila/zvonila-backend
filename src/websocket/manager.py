@@ -21,7 +21,9 @@ class WebSocketManager:
     
     async def send(self, user_id: int, type: str, data: str):
         """Отправляем сообщение конкретному пользователю"""
+        print("I'm sending", type)
         websocket = self.active_connections.get(user_id)
+        print("I'm sending", self.active_connections)
         if websocket:
             await websocket.send_json({"type": type, "data": data})
 

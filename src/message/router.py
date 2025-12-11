@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from src.chat.dependencies import get_chat_facade
+from src.chat.facade import ChatFacade
 from src.auth.dependencies import verify_user
 from src.message.dependencies import get_message_service
 from src.message.service import MessageService
 from src.message.schemas import MessageCreateReqBody, MessageSchema
-from typing import List
 from collections.abc import Sequence
 
 router = APIRouter()
@@ -14,10 +15,10 @@ async def get_messages(
     limit: int = Query(None, description="Limit"),
     offset: int = Query(None, description="Offset"),
     user_id: int = Depends(verify_user),
-    message_service: MessageService = Depends(get_message_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
     try:
-        return await message_service.list_messages(
+        return await chat_facade.get_messages(
             chat_id=chat_id, 
             user_id=user_id,
             limit=limit,
@@ -38,10 +39,10 @@ async def get_messages(
 async def create_message(
     form_data: MessageCreateReqBody,
     user_id: int = Depends(verify_user),
-    message_service: MessageService = Depends(get_message_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
     try:
-        return await message_service.send_message(
+        return await chat_facade.send_message(
             chat_id=form_data.chat_id,
             sender_id=user_id,
             text=form_data.text
@@ -62,10 +63,10 @@ async def create_message(
 async def delete_message(
     message_id: int,
     user_id: int = Depends(verify_user),
-    message_service: MessageService = Depends(get_message_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
     try:
-        await message_service.delete_message(
+        await chat_facade.delete_message(
             message_id=message_id,
             user_id=user_id
         )

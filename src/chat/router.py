@@ -1,19 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from src.chat.facade import ChatFacade
 from src.auth.dependencies import verify_user
-from src.chat.dependencies import get_chat_service
-from src.chat.service import ChatService
-from src.chat.schemas import ChatSchema, CreateChatReqBody
-from collections.abc import Sequence
+from src.chat.dependencies import get_chat_facade
+from src.chat.schemas import ChatSchema, ChatWithDetails, CreateChatReqBody
 
 router = APIRouter()
 
-@router.get("/", response_model=Sequence[ChatSchema])
+@router.get("/", response_model=List[ChatWithDetails])
 async def get_chats(
     user_id: int = Depends(verify_user),
-    chat_service: ChatService = Depends(get_chat_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
     try:
-        return await chat_service.list_chats(user_id)
+        return await chat_facade.get_chats(user_id)    
     except Exception as err:
         print(err)
         raise HTTPException(
@@ -25,20 +25,15 @@ async def get_chats(
 async def create_chat(
     form_data: CreateChatReqBody,
     user_id: int = Depends(verify_user),
-    chat_service: ChatService = Depends(get_chat_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
-    if form_data.receiver_id == user_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Нельзя создать чат с самим собой",
-        )
-
     try:    
-        return await chat_service.create_chat(
+        return await chat_facade.create_chat(
             user_id=user_id,
             receiver_id=form_data.receiver_id
         )
-    except ValueError:
+    except ValueError as ve:
+        print(ve)
         raise HTTPException(
             status_code=404,
             detail="Пользователь-получатель не найден",
@@ -53,16 +48,10 @@ async def create_chat(
 async def delete_chat(
     chat_id: int,
     user_id: int = Depends(verify_user),
-    chat_service: ChatService = Depends(get_chat_service)
+    chat_facade: ChatFacade = Depends(get_chat_facade)
 ):
     try:
-        chat = await chat_service.get_chat_by_id(chat_id, user_id)
-        if not chat:
-            raise HTTPException(
-                status_code=404,
-                detail="Чат не найден",
-            )
-        await chat_service.delete_chat(chat_id)
+        await chat_facade.delete_chat(user_id, chat_id)
     except HTTPException:
         raise
     except Exception:
