@@ -11,3 +11,5 @@ wheels/
 
 .vscode/
 *.pem
+/.env.prod
+/.env
