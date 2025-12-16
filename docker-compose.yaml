@@ -22,7 +22,7 @@ services:
       context: .
       args:
         APP_ENV: prod
-    command: bash -c "uv run alembic upgrade head && uv run uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers"
+    command: bash -c "uv run alembic upgrade head && uv run uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips '*'"
     ports:
       - "8000:8000"
     volumes:

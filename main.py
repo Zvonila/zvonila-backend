@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from src.auth.router import router as auth_router
 from src.sessions.router import router as session_router
 from src.user.router import router as user_router
@@ -33,5 +33,13 @@ app.include_router(websocket_router, prefix="/api/v1/ws", tags=["Сокет"])
 app.include_router(call_router, prefix="/api/v1/call", tags=["Звонки"])
 
 @app.get("/ping")
-def pong():
-    return {"ping": "pong!"}
+def pong(
+    x_forwarded_for: str = Header(None, alias='X-Forwarded-For'),
+    x_real_ip: str = Header(None, alias='X-Real-IP')
+
+):
+    return {
+        "ping": "pong!",
+        "x_forwarded_for": x_forwarded_for,
+        "x_real_ip": x_real_ip
+    }

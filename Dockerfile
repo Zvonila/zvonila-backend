@@ -11,4 +11,4 @@ COPY .env.${APP_ENV} .env
 RUN echo "BUILT WITH APP_ENV=${APP_ENV}"
 EXPOSE 8000
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
